@@ -17,6 +17,14 @@ backend/*.log
 backend/app.log
 backend/build.log
 
+# Environment files and credentials
+.env
+.env.local
+.env.*
+*.env
+*.key
+*.pem
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

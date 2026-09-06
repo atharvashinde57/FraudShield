@@ -1,21 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  SearchCode, 
-  User, 
-  ShieldAlert, 
-  Clock, 
-  Ban, 
-  CheckCircle, 
-  AlertTriangle, 
-  FileText, 
-  Send, 
-  Calendar, 
-  History, 
-  Activity,
-  Layers
-} from 'lucide-react';
-import { Transaction, CustomerProfile, MOCK_CUSTOMERS } from '../data/mockData';
+import { Transaction } from '../data/mockData';
 import { RiskBadge } from './RiskBadge';
+import { Shield, ShieldAlert, ArrowLeft, CheckCircle, Ban, Cpu, Activity } from 'lucide-react';
 
 interface FraudInvestigationViewProps {
   transaction: Transaction;
@@ -32,268 +18,133 @@ export const FraudInvestigationView: React.FC<FraudInvestigationViewProps> = ({
   onApproveTransaction,
   onShowToast
 }) => {
-  const [analystNotes, setAnalystNotes] = useState<string[]>([]);
-  const [newNote, setNewNote] = useState<string>('');
-
-  // Find corresponding customer profile
-  const customer: CustomerProfile = MOCK_CUSTOMERS.find(c => c.id === transaction.customerId) || {
-    id: transaction.customerId,
-    name: transaction.customerName,
-    email: 'user@example.com',
-    country: transaction.country,
-    accountAgeMonths: 18,
-    totalTransactions: 94,
-    totalVolume: '₹14.2L',
-    fraudAttempts: 2,
-    riskLevel: transaction.riskLevel,
-    accountStatus: 'Flagged',
-    devices: [transaction.device, 'iPhone 14 Pro'],
-    knownLocations: [transaction.location, 'Pune, IN'],
-    recentActivity: 'Under active security review'
-  };
-
-  const handleAddNote = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newNote.trim()) return;
-    setAnalystNotes([`[${new Date().toLocaleTimeString()}] ${newNote.trim()}`, ...analystNotes]);
-    setNewNote('');
-    onShowToast('Note Added', 'Analyst case note logged successfully', 'info');
-  };
+  const [notes, setNotes] = useState('');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
-      <div className="page-header">
+    <div className="view-container">
+      <div className="view-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 className="page-title">
-            <SearchCode color="var(--secondary)" size={28} /> Fraud Investigation Workspace
+          <button
+            onClick={() => onNavigate('transactions')}
+            className="btn btn-secondary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}
+          >
+            <ArrowLeft size={16} /> Back to Monitoring
+          </button>
+          <h1 className="view-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Cpu className="text-primary" /> SecOps Fraud Investigation Canvas
           </h1>
-          <p className="page-subtitle">
-            Case file review for Target Transaction <strong className="font-mono">{transaction.id}</strong>
-          </p>
+          <p className="view-subtitle">Deep transaction packet & forensic telemetry analysis</p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button
-            onClick={() => onShowToast('Escalated Case', 'Case escalated to Senior SecOps Lead', 'warning')}
-            className="btn btn-secondary btn-sm"
+            onClick={() => onApproveTransaction(transaction)}
+            className="btn btn-success"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            <AlertTriangle size={14} color="var(--warning)" /> Escalate Case
+            <CheckCircle size={16} /> Mark Legitimate
           </button>
           <button
-            onClick={() => {
-              onShowToast('False Positive Marked', 'Transaction updated to False Positive', 'success');
-              onApproveTransaction(transaction);
-            }}
-            className="btn btn-outline btn-sm"
+            onClick={() => onBlockTransaction(transaction)}
+            className="btn btn-danger"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            Mark False Positive
+            <Ban size={16} /> Block & Report
           </button>
         </div>
       </div>
 
-      {/* 3-Panel Grid Workspace */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1.3fr 1.1fr',
-        gap: '1.25rem'
-      }} className="investigation-3panel-grid">
-        
-        {/* Left Panel: Customer Information */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-            <span style={{ fontSize: '0.725rem', fontWeight: 800, color: 'var(--text-subtle)', letterSpacing: '0.05em' }}>
-              CUSTOMER RISK PROFILE
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
-              <div style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                color: '#fff',
-                fontSize: '1rem'
-              }}>
-                {customer.name.charAt(0)}
-              </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Main Transaction Card */}
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                  {customer.name}
-                </h3>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} className="font-mono">
-                  {customer.id} • {customer.email}
-                </div>
+                <span className="font-mono text-muted" style={{ fontSize: '0.85rem' }}>TXN ID: {transaction.id}</span>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0.25rem 0' }}>{transaction.formattedAmount}</h2>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-subtle)' }}>Merchant: {transaction.merchant}</span>
+              </div>
+              <RiskBadge level={transaction.riskLevel} score={transaction.riskScore} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+              <div>
+                <span className="text-subtle" style={{ fontSize: '0.75rem' }}>Customer</span>
+                <p style={{ fontWeight: 600, margin: '0.25rem 0' }}>{transaction.customerName}</p>
+                <span className="font-mono text-muted" style={{ fontSize: '0.75rem' }}>{transaction.customerId}</span>
+              </div>
+
+              <div>
+                <span className="text-subtle" style={{ fontSize: '0.75rem' }}>Location / IP</span>
+                <p style={{ fontWeight: 600, margin: '0.25rem 0' }}>{transaction.location}</p>
+                <span className="font-mono text-muted" style={{ fontSize: '0.75rem' }}>{transaction.ipAddress}</span>
+              </div>
+
+              <div>
+                <span className="text-subtle" style={{ fontSize: '0.75rem' }}>Payment Method</span>
+                <p style={{ fontWeight: 600, margin: '0.25rem 0' }}>{transaction.paymentMethod}</p>
+                <span className="font-mono text-muted" style={{ fontSize: '0.75rem' }}>Device: {transaction.device}</span>
               </div>
             </div>
           </div>
 
-          {/* Stats List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Account Status:</span>
-              <span style={{ fontWeight: 700, color: customer.accountStatus === 'Frozen' ? 'var(--critical)' : 'var(--warning)' }}>
-                {customer.accountStatus}
-              </span>
-            </div>
+          {/* Machine Learning / Rules Telemetry */}
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Activity className="text-primary" size={18} /> Spring Boot Fraud Engine Risk Factor Breakdown
+            </h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ padding: '0.75rem 1rem', background: 'var(--bg-subtle)', borderRadius: '8px', borderLeft: '4px solid var(--warning)' }}>
+                <strong style={{ fontSize: '0.875rem' }}>Rule #102: Velocity Spiking Anomaly</strong>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.25rem 0 0 0' }}>
+                  Multiple high-value transactions triggered within 120s window from same device fingerprint.
+                </p>
+              </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Account Tenure:</span>
-              <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{customer.accountAgeMonths} months</span>
+              <div style={{ padding: '0.75rem 1rem', background: 'var(--bg-subtle)', borderRadius: '8px', borderLeft: '4px solid var(--danger)' }}>
+                <strong style={{ fontSize: '0.875rem' }}>Rule #404: Impossible Travel Geolocation</strong>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.25rem 0 0 0' }}>
+                  IP route mapped to Tor Exit Node / Proxy network outside habitual customer geo.
+                </p>
+              </div>
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Prior Fraud Incidents:</span>
-              <span style={{ fontWeight: 800, color: customer.fraudAttempts > 0 ? 'var(--critical)' : 'var(--success)' }} className="font-mono">
-                {customer.fraudAttempts} incidents
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Overall Risk Level:</span>
-              <RiskBadge score={transaction.riskScore} level={customer.riskLevel} />
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Total Volume:</span>
-              <span style={{ fontWeight: 700, color: 'var(--text-main)' }} className="font-mono">{customer.totalVolume}</span>
-            </div>
-          </div>
-
-          {/* Known Devices & Locations */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-            <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-subtle)', marginBottom: '0.4rem' }}>
-              REGISTERED DEVICES ({customer.devices.length})
-            </div>
-            <ul style={{ paddingLeft: '1.1rem', fontSize: '0.775rem', color: 'var(--text-muted)' }}>
-              {customer.devices.map((d, i) => (
-                <li key={i}>{d}</li>
-              ))}
-            </ul>
           </div>
         </div>
 
-        {/* Middle Panel: Transaction Audit History */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.725rem', fontWeight: 800, color: 'var(--text-subtle)', letterSpacing: '0.05em' }}>
-              CASE TIMELINE & AUDIT LOG
-            </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700 }} className="font-mono">
-              TXN: {transaction.id}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, overflowY: 'auto' }}>
-            {transaction.timeline.map((item, idx) => (
-              <div key={idx} style={{
-                background: 'rgba(255, 255, 255, 0.02)',
+        {/* Analyst Notes Sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ShieldAlert className="text-warning" size={18} /> SecOps Analyst Case Notes
+            </h3>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="Record forensic observation, IP lookup, or customer verification details..."
+              style={{
+                width: '100%',
+                height: '140px',
+                background: 'var(--bg-subtle)',
                 border: '1px solid var(--border-color)',
-                padding: '0.75rem',
                 borderRadius: '8px',
-                display: 'flex',
-                gap: '0.75rem'
-              }}>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: 'var(--bg-elevated)',
-                  border: '1px solid var(--border-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--primary)',
-                  flexShrink: 0
-                }}>
-                  <Clock size={14} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-subtle)' }} className="font-mono">
-                    {item.time}
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', marginTop: '0.1rem' }}>
-                    {item.event}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Panel: Risk Assessment & Analyst Decision */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1.25rem' }}>
-          <div>
-            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '0.725rem', fontWeight: 800, color: 'var(--text-subtle)', letterSpacing: '0.05em' }}>
-                AI RISK RECOMMENDATION
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: transaction.riskScore > 80 ? 'var(--critical)' : 'var(--warning)' }} className="font-mono">
-                  SCORE {transaction.riskScore} / 100
-                </span>
-                <span style={{
-                  background: 'var(--critical-bg)',
-                  color: 'var(--critical)',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '4px',
-                  border: '1px solid var(--critical-border)'
-                }}>
-                  ACTION: BLOCK RECOMMENDED
-                </span>
-              </div>
-            </div>
-
-            {/* Analyst Case Notes */}
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <FileText size={14} /> Analyst Case Notes ({analystNotes.length})
-              </div>
-
-              <form onSubmit={handleAddNote} style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.75rem' }}>
-                <input
-                  type="text"
-                  placeholder="Add case observation..."
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  className="input-field"
-                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.75rem' }}
-                />
-                <button type="submit" className="btn btn-primary btn-sm">
-                  <Send size={13} />
-                </button>
-              </form>
-
-              <div style={{ maxHeight: '130px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                {analystNotes.map((note, idx) => (
-                  <div key={idx} style={{ fontSize: '0.775rem', color: 'var(--text-muted)', background: 'rgba(255, 255, 255, 0.03)', padding: '0.4rem 0.6rem', borderRadius: '4px' }}>
-                    {note}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Decision Buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
+                padding: '0.75rem',
+                color: 'var(--text-main)',
+                fontSize: '0.85rem',
+                resize: 'none',
+                marginBottom: '1rem'
+              }}
+            />
             <button
-              onClick={() => onBlockTransaction(transaction)}
-              className="btn btn-danger btn-lg"
-              style={{ width: '100%', gap: '0.5rem' }}
+              onClick={() => {
+                onShowToast('Forensic Note Saved', 'Investigation log appended to case file.', 'info');
+                setNotes('');
+              }}
+              className="btn btn-primary"
+              style={{ width: '100%' }}
             >
-              <Ban size={18} /> CONFIRM BLOCK TRANSACTION
-            </button>
-            <button
-              onClick={() => onApproveTransaction(transaction)}
-              className="btn btn-success"
-              style={{ width: '100%', gap: '0.5rem' }}
-            >
-              <CheckCircle size={18} /> APPROVE TRANSACTION
+              Save Analyst Notes
             </button>
           </div>
         </div>

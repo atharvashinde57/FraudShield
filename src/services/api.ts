@@ -1,6 +1,6 @@
-import { Transaction, FraudAlert, FraudRule } from '../data/mockData';
+import { Transaction, FraudAlert, FraudRule, CustomerProfile, MOCK_CUSTOMERS } from '../data/mockData';
 
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1').replace(/\/$/, '');
 
 // Helper for JWT Authorization header
 const getAuthHeaders = (): HeadersInit => {
@@ -135,6 +135,22 @@ export const ApiService = {
       return await res.json();
     } catch (err) {
       return null;
+    }
+  },
+
+  // Fetch Customer Risk Profiles
+  async getCustomers(): Promise<CustomerProfile[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/customers`, { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch customers');
+      const data = await res.json();
+      return data.map((c: any) => ({
+        ...c,
+        devices: c.devicesCsv ? c.devicesCsv.split('; ') : [],
+        knownLocations: c.locationsCsv ? c.locationsCsv.split('; ') : []
+      }));
+    } catch (err) {
+      return MOCK_CUSTOMERS;
     }
   }
 };

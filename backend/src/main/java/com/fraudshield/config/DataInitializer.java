@@ -96,7 +96,24 @@ public class DataInitializer implements CommandLineRunner {
             transactionRepository.save(t3);
         }
 
-        // 3. Seed Fraud Rules
+        // 3. Seed Fraud Alerts
+        if (fraudAlertRepository.count() == 0) {
+            FraudAlertEntity a1 = new FraudAlertEntity();
+            a1.setId("ALT-1092");
+            a1.setAlertCode("RULE-CRIT-001");
+            a1.setTransactionId("TXN-92831");
+            a1.setCustomerName("Rahul Sharma");
+            a1.setCustomerId("CUST-8831");
+            a1.setAmount("₹84,500");
+            a1.setRiskScore(94);
+            a1.setRiskLevel("CRITICAL");
+            a1.setReasonsCsv("Unusual location shift; Tor browser exit node; High ticket size");
+            a1.setTimestamp("2 mins ago");
+            a1.setStatus("Critical");
+            fraudAlertRepository.save(a1);
+        }
+
+        // 4. Seed Fraud Rules
         if (fraudRuleRepository.count() == 0) {
             FraudRuleEntity r1 = new FraudRuleEntity();
             r1.setId("RULE-001");
@@ -117,6 +134,57 @@ public class DataInitializer implements CommandLineRunner {
             r2.setStatus("ACTIVE");
             r2.setTriggeredCount(89);
             fraudRuleRepository.save(r2);
+        }
+
+        // 4. Seed Customer Profiles
+        if (customerRepository.count() == 0) {
+            CustomerEntity c1 = new CustomerEntity();
+            c1.setId("CUST-8831");
+            c1.setName("Rahul Sharma");
+            c1.setEmail("rahul.sharma@example.com");
+            c1.setCountry("India");
+            c1.setAccountAgeMonths(24);
+            c1.setTotalTransactions(142);
+            c1.setTotalVolume("₹14.2L");
+            c1.setFraudAttempts(2);
+            c1.setRiskLevel("CRITICAL");
+            c1.setAccountStatus("Flagged");
+            c1.setDevicesCsv("iPhone 14 Pro; MacBook Air M2; Unknown Tor Android");
+            c1.setLocationsCsv("Mumbai, IN; Pune, IN");
+            c1.setRecentActivity("Flagged transaction TXN-92831 under security hold");
+            customerRepository.save(c1);
+
+            CustomerEntity c2 = new CustomerEntity();
+            c2.setId("CUST-4412");
+            c2.setName("Priya Patel");
+            c2.setEmail("priya.p@techcorp.in");
+            c2.setCountry("India");
+            c2.setAccountAgeMonths(1);
+            c2.setTotalTransactions(8);
+            c2.setTotalVolume("₹45,000");
+            c2.setFraudAttempts(1);
+            c2.setRiskLevel("HIGH");
+            c2.setAccountStatus("Active");
+            c2.setDevicesCsv("iPhone 15 Pro");
+            c2.setLocationsCsv("Bengaluru, IN");
+            c2.setRecentActivity("High risk UPI transfer requiring 2FA re-auth");
+            customerRepository.save(c2);
+
+            CustomerEntity c3 = new CustomerEntity();
+            c3.setId("CUST-1092");
+            c3.setName("Alexander Wright");
+            c3.setEmail("awright@ukfinance.co.uk");
+            c3.setCountry("United Kingdom");
+            c3.setAccountAgeMonths(36);
+            c3.setTotalTransactions(310);
+            c3.setTotalVolume("$180,000");
+            c3.setFraudAttempts(3);
+            c3.setRiskLevel("CRITICAL");
+            c3.setAccountStatus("Frozen");
+            c3.setDevicesCsv("Dell XPS 15; Linux Proxy Node");
+            c3.setLocationsCsv("London, UK; Amsterdam, NL");
+            c3.setRecentActivity("Blocked wire transfer $2,430 due to malicious IP");
+            customerRepository.save(c3);
         }
     }
 }

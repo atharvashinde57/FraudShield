@@ -37,7 +37,8 @@ services:
       SPRING_DATASOURCE_USERNAME: frauduser
       SPRING_DATASOURCE_PASSWORD: fraudpassword
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-FraudShieldLocalDockerDevKey998877665544332211}
     depends_on:
       db:
         condition: service_healthy

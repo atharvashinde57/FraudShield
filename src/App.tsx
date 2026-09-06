@@ -188,7 +188,12 @@ export function App() {
         }}
         alerts={alerts}
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={(q) => {
+          setSearchQuery(q);
+          if (q.trim().length > 0 && ['analytics', 'model-performance', 'settings'].includes(currentView)) {
+            setCurrentView('transactions');
+          }
+        }}
       />
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
@@ -210,6 +215,7 @@ export function App() {
                 onNavigate={setCurrentView}
                 onSelectTransaction={setSelectedTransaction}
                 onBlockTransaction={triggerBlockTransaction}
+                searchQuery={searchQuery}
               />
             )}
 
@@ -241,6 +247,7 @@ export function App() {
                 onSelectTransaction={setSelectedTransaction}
                 onBlockTransaction={triggerBlockTransaction}
                 onResolveAlert={handleResolveAlert}
+                searchQuery={searchQuery}
               />
             )}
 
@@ -255,7 +262,11 @@ export function App() {
             )}
 
             {currentView === 'customers' && (
-              <CustomersView onNavigate={setCurrentView} />
+              <CustomersView
+                onNavigate={setCurrentView}
+                globalSearchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
             )}
 
             {currentView === 'analytics' && (

@@ -41,14 +41,27 @@ export const TransactionMonitoringView: React.FC<TransactionMonitoringViewProps>
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 6;
 
-  // Filtering logic
+  // Reset page to 1 when search or filter options change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedRiskFilter, selectedStatusFilter, selectedPaymentFilter]);
+
+  // Comprehensive filtering logic
   const filteredTransactions = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+
     return transactions.filter(t => {
-      const matchesSearch = 
-        t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.merchant.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = !query ||
+        t.id.toLowerCase().includes(query) ||
+        t.customerName.toLowerCase().includes(query) ||
+        t.customerId.toLowerCase().includes(query) ||
+        t.location.toLowerCase().includes(query) ||
+        t.merchant.toLowerCase().includes(query) ||
+        t.paymentMethod.toLowerCase().includes(query) ||
+        t.status.toLowerCase().includes(query) ||
+        (t.ipAddress && t.ipAddress.toLowerCase().includes(query)) ||
+        (t.device && t.device.toLowerCase().includes(query)) ||
+        t.formattedAmount.toLowerCase().includes(query);
 
       const matchesRisk = selectedRiskFilter === 'ALL' || t.riskLevel === selectedRiskFilter;
       const matchesStatus = selectedStatusFilter === 'ALL' || t.status === selectedStatusFilter;

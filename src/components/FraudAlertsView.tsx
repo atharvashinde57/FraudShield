@@ -19,6 +19,7 @@ interface FraudAlertsViewProps {
   onSelectTransaction: (txn: Transaction) => void;
   onBlockTransaction: (txn: Transaction) => void;
   onResolveAlert: (alertId: string) => void;
+  searchQuery?: string;
 }
 
 export const FraudAlertsView: React.FC<FraudAlertsViewProps> = ({
@@ -27,13 +28,23 @@ export const FraudAlertsView: React.FC<FraudAlertsViewProps> = ({
   onNavigate,
   onSelectTransaction,
   onBlockTransaction,
-  onResolveAlert
+  onResolveAlert,
+  searchQuery
 }) => {
   const [activeTab, setActiveTab] = useState<'All' | 'Critical' | 'High Risk' | 'Under Investigation' | 'Resolved'>('All');
 
+  const query = searchQuery?.toLowerCase().trim();
+
   const filteredAlerts = alerts.filter(a => {
-    if (activeTab === 'All') return true;
-    return a.status === activeTab;
+    const matchesTab = activeTab === 'All' || a.status === activeTab;
+    const matchesQuery = !query ||
+      a.id.toLowerCase().includes(query) ||
+      a.alertCode.toLowerCase().includes(query) ||
+      a.customerName.toLowerCase().includes(query) ||
+      a.transactionId.toLowerCase().includes(query) ||
+      a.reasons.some(r => r.toLowerCase().includes(query));
+
+    return matchesTab && matchesQuery;
   });
 
   const getTabCount = (tab: string) => {

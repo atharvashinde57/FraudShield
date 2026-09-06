@@ -5,18 +5,36 @@ import { RiskBadge } from './RiskBadge';
 
 interface CustomersViewProps {
   onNavigate: (view: string) => void;
+  globalSearchQuery?: string;
+  onSearchChange?: (q: string) => void;
 }
 
-export const CustomersView: React.FC<CustomersViewProps> = ({ onNavigate }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+export const CustomersView: React.FC<CustomersViewProps> = ({ 
+  onNavigate, 
+  globalSearchQuery, 
+  onSearchChange 
+}) => {
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerProfile | null>(null);
 
+  const activeQuery = (globalSearchQuery !== undefined && globalSearchQuery !== '' 
+    ? globalSearchQuery 
+    : localSearchQuery
+  ).toLowerCase().trim();
+
   const filteredCustomers = MOCK_CUSTOMERS.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.country.toLowerCase().includes(searchQuery.toLowerCase())
+    !activeQuery ||
+    c.name.toLowerCase().includes(activeQuery) ||
+    c.email.toLowerCase().includes(activeQuery) ||
+    c.id.toLowerCase().includes(activeQuery) ||
+    c.country.toLowerCase().includes(activeQuery) ||
+    c.accountStatus.toLowerCase().includes(activeQuery)
   );
+
+  const handleQueryChange = (val: string) => {
+    setLocalSearchQuery(val);
+    if (onSearchChange) onSearchChange(val);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -39,8 +57,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onNavigate }) => {
           <input
             type="text"
             placeholder="Search by customer name, email, ID or country..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={globalSearchQuery !== undefined && globalSearchQuery !== '' ? globalSearchQuery : localSearchQuery}
+            onChange={(e) => handleQueryChange(e.target.value)}
             className="input-field"
             style={{ paddingLeft: '2.3rem' }}
           />

@@ -34,18 +34,32 @@ interface DashboardViewProps {
   onNavigate: (view: string) => void;
   onSelectTransaction: (txn: Transaction) => void;
   onBlockTransaction: (txn: Transaction) => void;
+  searchQuery?: string;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   transactions,
   onNavigate,
   onSelectTransaction,
-  onBlockTransaction
+  onBlockTransaction,
+  searchQuery
 }) => {
   const [timeFilter, setTimeFilter] = useState<'24H' | '7D' | '30D' | '90D'>('24H');
 
-  // Filter suspicious/critical recent transactions
-  const recentSuspicious = transactions.slice(0, 6);
+  // Filter suspicious/critical recent transactions by search query
+  const query = searchQuery?.toLowerCase().trim();
+  const recentSuspicious = transactions.filter(t => {
+    if (!query) return true;
+    return (
+      t.id.toLowerCase().includes(query) ||
+      t.customerName.toLowerCase().includes(query) ||
+      t.customerId.toLowerCase().includes(query) ||
+      t.location.toLowerCase().includes(query) ||
+      t.merchant.toLowerCase().includes(query) ||
+      t.paymentMethod.toLowerCase().includes(query) ||
+      t.formattedAmount.toLowerCase().includes(query)
+    );
+  }).slice(0, 6);
 
   // Donut distribution data
   const riskDistributionData = [

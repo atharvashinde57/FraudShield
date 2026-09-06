@@ -191,27 +191,7 @@ export function App() {
         onSearchChange={setSearchQuery}
       />
 
-      {/* Backend API Connection Status Bar */}
-      <div style={{
-        background: isBackendConnected ? 'rgba(16, 185, 129, 0.12)' : 'rgba(59, 130, 246, 0.12)',
-        borderBottom: '1px solid var(--border-color)',
-        padding: '0.35rem 1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '0.75rem',
-        color: isBackendConnected ? 'var(--success)' : 'var(--primary)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }} className="font-mono">
-          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: isBackendConnected ? 'var(--success)' : 'var(--primary)' }} />
-          REST API BACKEND: {isBackendConnected ? 'CONNECTED (Spring Boot 2.7 + Security JWT + Spring Data JPA)' : 'SPRING BOOT API ACTIVE'}
-        </div>
-        <div style={{ color: 'var(--text-subtle)' }} className="font-mono">
-          JWT AUTH: ACTIVE • ENDPOINT: http://localhost:8080/api/v1
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
         {/* Left Sidebar Navigation */}
         <Sidebar
           currentView={currentView}

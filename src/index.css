@@ -95,6 +95,13 @@ body {
   font-family: 'JetBrains Mono', monospace;
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 /* Layout */
 .app-layout {
   display: flex;
@@ -108,8 +115,10 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   background: radial-gradient(circle at 50% 0%, rgba(15, 23, 42, 0.6) 0%, var(--bg-dark) 100%);
 }
 
@@ -119,6 +128,7 @@ body {
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
+  min-height: min-content;
 }
 
 /* Custom Scrollbar */
